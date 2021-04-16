@@ -5,12 +5,15 @@ public class Ticket {
 	private TicketSeverity severity;
 	private TicketStatus status;
 	private Account owner;
+	// Unix time
+	private long creationTimeStamp;
 
 	public Ticket(String description, TicketSeverity severity, Account owner) {
 		this.description = description;
 		this.severity = severity;
 		status = TicketStatus.OPEN;
 		this.owner = owner;
+		creationTimeStamp = System.currentTimeMillis() / 1000L;
 	}
 	
 	public void printDetails(int index) {

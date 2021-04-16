@@ -15,6 +15,7 @@ public class Main {
 		accounts = new ArrayList<Account>();
 		tickets = new ArrayList<Ticket>();
 		
+		// Hardcoded user accounts
 		accounts.add(new Account("test@domain.com", "Test User", "xxxx xxx xxx", "abc", AccountType.STAFF));
 		accounts.add(new Technician("harry@support.domain.com", "Harry Styles", "xxxx xxx xxx", "abc",
 				AccountType.TECHNICIAN, 1));
@@ -29,6 +30,7 @@ public class Main {
 		mainMenu();
 	}
 
+	// Login menu
 	public void mainMenu() {
 		printTitle("Cinco Login");
 		System.out.println("Select an option from the following:");
@@ -56,6 +58,7 @@ public class Main {
 		}
 	}
 
+	// Staff main menu
 	public void systemMenu() {
 		printTitle("Cinco");
 		System.out.println("1. Submit a ticket");
@@ -80,6 +83,7 @@ public class Main {
 		}
 	}
 
+	// Technician main menu
 	public void technicianMenu() {
 		ArrayList<Ticket> validTickets = new ArrayList<Ticket>();
 		printTitle("Cinco Technician");
@@ -155,6 +159,7 @@ public class Main {
 		return closedTickets;
 	}
 	
+	// Staff submit ticket menu
 	public void submitTicket() {
 		printTitle("Submit a Ticket");
 		String desc = getInput("Please provide a description of the problem:");
@@ -168,6 +173,7 @@ public class Main {
 	
 	public void assignTicket(Ticket ticket) {
 		Technician technician = null;
+		// Get technician with least assigned tickets
 		int minAssignedTickets = Integer.MAX_VALUE;
 		ArrayList<Technician> techs = getTechniciansOfLevel(ticket.getSeverity().getSeverityInt());
 		for(Technician tech : techs) {
