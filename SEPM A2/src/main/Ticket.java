@@ -7,6 +7,7 @@ public class Ticket {
 	private Account owner;
 	// Unix time
 	private long creationTimeStamp;
+	private long resolutionTimeStamp;
 
 	public Ticket(String description, TicketSeverity severity, Account owner) {
 		this.description = description;
@@ -14,6 +15,7 @@ public class Ticket {
 		status = TicketStatus.OPEN;
 		this.owner = owner;
 		creationTimeStamp = System.currentTimeMillis() / 1000L;
+		resolutionTimeStamp = -1; // will set to a timestamp once closed
 	}
 	
 	public void printDetails(int index) {
@@ -22,6 +24,10 @@ public class Ticket {
 	
 	public TicketStatus getStatus() {
 		return status;
+	}
+	
+	public void setStatus(TicketStatus status) {
+		this.status = status;
 	}
 	
 	public TicketSeverity getSeverity() {

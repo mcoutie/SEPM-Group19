@@ -15,7 +15,7 @@ public class Main {
 		accounts = new ArrayList<Account>();
 		tickets = new ArrayList<Ticket>();
 		
-		// Hardcoded user accounts
+		// Hardcoded user accounts during sprint cycles
 		accounts.add(new Account("test@domain.com", "Test User", "xxxx xxx xxx", "abc", AccountType.STAFF));
 		accounts.add(new Technician("harry@support.domain.com", "Harry Styles", "xxxx xxx xxx", "abc",
 				AccountType.TECHNICIAN, 1));
@@ -32,31 +32,42 @@ public class Main {
 
 	// Login menu
 	public void mainMenu() {
-		printTitle("Cinco Login");
-		System.out.println("Select an option from the following:");
-		System.out.println("1. Login");
-		System.out.println("2. Forgot Password");
-		System.out.println("3. Create Account");
+		String choice = "";
+		do {
+			printTitle("Cinco Login");
+			System.out.println("Select an option from the following:");
+			System.out.println("1. Login");
+			System.out.println("2. Forgot Password");
+			System.out.println("3. Create Account");
+			System.out.println("4. Exit Program");
 
-		String choice = in.nextLine();
+			choice = in.nextLine();
 
-		switch (choice) {
-		case "1":
-			login();
-			break;
+			switch (choice) {
+			case "1":
+				login();
+				break;
 
-		case "2":
-			resetPassword();
-			break;
+			case "2":
+				resetPassword();
+				break;
 
-		case "3":
-			createAccount();
-			break;
+			case "3":
+				createAccount();
+				break;
+				
+			case "4":
+				System.out.println("Exiting program");
+				System.exit(0);
+				break;
 
-		default:
-			System.err.format("%s is not a valid option.\n", choice);
-		}
-	}
+			default:
+				// Handles invalid inputs
+				System.err.format("%s is not a valid option.\n", choice);
+			}
+			System.out.println();
+		} while (choice != "4");
+	} 
 
 	// Staff main menu
 	public void systemMenu() {
@@ -85,6 +96,9 @@ public class Main {
 
 	// Technician main menu
 	public void technicianMenu() {
+		
+		//TODO add for tickets in validTickets, if resolutionTimeStamp is 24 hours ago or more (and >0) set to archived
+		
 		ArrayList<Ticket> validTickets = new ArrayList<Ticket>();
 		printTitle("Cinco Technician");
 		printTitle("Tickets");
@@ -128,13 +142,25 @@ public class Main {
 			technicianMenu();
 		}
 		
-		//TODO error check
-		int index = Integer.parseInt(getInput("Which ticket do you want to modify:")) - 1;
-		Ticket ticket = ticketList.get(index);
+		// Check that the ticket number is valid within the list of assigned tickets
+		int index = -1;
+		Ticket ticket = null;
+		int newSeverity = 0;
+		do {
+			if (index != -1) System.out.println("Please select a number associated to a ticket");
+			index = Integer.parseInt(getInput("Which ticket do you want to modify:")) - 1;
+		} while (index < 0 || index > ticketList.size() - 1);
+		
+		ticket = ticketList.get(index);		
 		System.out.println("That ticket currently has a severity of " + ticket.getSeverity().toString()+".");
-		int newSeverity = Integer.parseInt(getInput("Please chose a number between 1 and 3 for the new severity:"));
+		
+		do {
+			newSeverity = Integer.parseInt(getInput("Please chose a number between 1 and 3 for the new severity:"));
+		} while (newSeverity < 1 || newSeverity >3);
+			
 		int oldSeverity = ticket.getSeverity().getSeverityInt();
 		
+		//TODO If oldSeverity=3 & newSeverity<3 or oldSeverity>3 & newSeverity=3 Update Technician (
 		
 		ticket.setSeverity(TicketSeverity.values()[newSeverity]);
 		System.out.println("Ticket severity has been updated.");
@@ -145,6 +171,11 @@ public class Main {
 		printTitle("Change Ticket Status");
 		if(ticketList.size() == 0) {
 			System.err.println("No tickets found.");
+			
+			//TODO Menu asking for Status = Open, Close res, Close unres.
+			
+			//TODO ticket.setStatus(newStatus) (only if status != Archived)
+			
 			technicianMenu();
 		}
 	}
@@ -248,6 +279,7 @@ public class Main {
 		}
 	}
 
+	// Ensures that the correct password and username combination was entered
 	public Account validateLogin(String email, String password) {
 		for (Account a : accounts) {
 			if (a.getEmail().equals(email) && a.getPassword().equals(password)) {
@@ -272,6 +304,7 @@ public class Main {
 		mainMenu();
 	}
 
+	// Creates a new account instance 
 	public void createAccount() {
 		printTitle("Create Account");
 		String email = getInput("Email:");
@@ -281,7 +314,7 @@ public class Main {
 		while (password.equals("")) {
 			password = validatePassword(getInput("Password:"));
 			if (password.equals("")) {
-				System.err.println("Invalid Password.\n");
+				System.err.println("Invalid Password, there must be uppercase and lowercase letters, with at least 20 characters.\n");
 			}
 		}
 		System.out.println("Account Created.\n");
@@ -293,24 +326,30 @@ public class Main {
 	public String validatePassword(String password) {
 		boolean hasLower = false;
 		boolean hasUpper = false;
-
+		boolean hasNumeric = false;
+		
+		// Length must be at least 20 characters
 		if (password.length() < 20) {
 			return "";
 		}
 
+		// and there must be at least one uppercase one lowercase and one numerical character
 		for (int i = 0; i < password.length(); i++) {
 			Character c = password.charAt(i);
 			if (Character.isUpperCase(c)) {
 				hasUpper = true;
 			} else if (Character.isLowerCase(c)) {
 				hasLower = true;
+			} else if (Character.isDigit(c)) {
+				hasNumeric = true;
 			}
+			
 
-			if (hasLower && hasUpper) {
+			if (hasLower && hasUpper && hasNumeric ) {
 				return password;
 			}
 		}
-
+		// else return empty string
 		return "";
 	}
 

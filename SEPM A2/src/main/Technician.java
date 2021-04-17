@@ -25,6 +25,10 @@ public class Technician extends Account {
 		tickets.add(ticket);
 	}
 	
+	public void unassignTicket(Ticket ticket) {
+		tickets.remove(ticket);
+	}
+	
 	public ArrayList<Ticket> getAssignedTickets() {
 		return tickets;
 	}
